@@ -1,46 +1,44 @@
-const weddingDate = new Date("2025-07-24T00:00:00+07:00");
+const weddingDate = new Date("2025-07-24T10:00:00+07:00");
 
-    function updateTime() {
-      const now = new Date();
-      let diff = Math.floor((now - weddingDate) / 1000);
+function updateTime() {
+  const diff = (Date.now() - weddingDate) / 1000;
+  const timeUnits = [
+    { value: 365.25 * 24 * 3600, name: 'year' },
+    { value: 30.44 * 24 * 3600, name: 'month' },
+    { value: 24 * 3600, name: 'day' },
+    { value: 3600, name: 'hour' },
+    { value: 60, name: 'minute' },
+    { value: 1, name: 'second' }
+  ];
 
-      const years = Math.floor(diff / (365.25 * 24 * 60 * 60));
-      diff -= years * 365.25 * 24 * 60 * 60;
+  let remaining = diff;
+  const timeComponents = timeUnits.map(({ value, name }) => {
+    const amount = Math.floor(remaining / value);
+    remaining %= value;
+    return { amount, name };
+  });
 
-      const months = Math.floor(diff / (30.44 * 24 * 60 * 60));
-      diff -= months * 30.44 * 24 * 60 * 60;
+  document.getElementById("ym").innerHTML = [
+    timeComponents[0], // years
+    timeComponents[1]  // months
+  ].map(createTimeBox).join('');
 
-      const days = Math.floor(diff / (24 * 60 * 60));
-      diff -= days * 24 * 60 * 60;
+  document.getElementById("dhms").innerHTML = [
+    timeComponents[2], // days
+    timeComponents[3], // hours
+    timeComponents[4], // minutes
+    timeComponents[5]  // seconds
+  ].map(createTimeBox).join('');
+}
 
-      const hours = Math.floor(diff / (60 * 60));
-      diff -= hours * 60 * 60;
+function createTimeBox({ amount, name }) {
+  return `
+    <div class="time-box">
+      <div class="time-value">${amount}</div>
+      <div class="time-label">${name}${amount !== 1 ? 's' : ''}</div>
+    </div>
+  `;
+}
 
-      const minutes = Math.floor(diff / 60);
-      const seconds = diff % 60;
-
-      document.getElementById("ym").innerHTML = `
-        ${createTimeBox(years, 'year')}
-        ${createTimeBox(months, 'month')}
-      `;
-
-      document.getElementById("dhms").innerHTML = `
-        ${createTimeBox(days, 'day')}
-        ${createTimeBox(hours, 'hour')}
-        ${createTimeBox(minutes, 'minute')}
-        ${createTimeBox(seconds, 'second')}
-      `;
-    }
-
-    function createTimeBox(value, label) {
-      const pluralLabel = value === 1 ? label : label + 's';
-      return `
-        <div class="time-box">
-          <div class="time-value">${value}</div>
-          <div class="time-label">${pluralLabel}</div>
-        </div>
-      `;
-    }
-
-    setInterval(updateTime, 1000);
-    updateTime();
+setInterval(updateTime, 1000);
+updateTime();

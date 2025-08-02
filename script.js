@@ -1,44 +1,66 @@
-const weddingDate = new Date("2025-07-24T10:00:00+07:00");
-
-function updateTime() {
-  const diff = (Date.now() - weddingDate) / 1000;
-  const timeUnits = [
-    { value: 365.25 * 24 * 3600, name: 'year' },
-    { value: 30.44 * 24 * 3600, name: 'month' },
-    { value: 24 * 3600, name: 'day' },
-    { value: 3600, name: 'hour' },
-    { value: 60, name: 'minute' },
-    { value: 1, name: 'second' }
-  ];
-
-  let remaining = diff;
-  const timeComponents = timeUnits.map(({ value, name }) => {
-    const amount = Math.floor(remaining / value);
-    remaining %= value;
-    return { amount, name };
+document.addEventListener('DOMContentLoaded', function() {
+  particlesJS('particles-js', {
+    particles: {
+      number: { value: 80, density: { enable: true, value_area: 800 } },
+      color: { value: "#ffffff" },
+      shape: { type: "circle" },
+      opacity: { value: 0.3, random: true },
+      size: { value: 3, random: true },
+      line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.2, width: 1 },
+      move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out" }
+    },
+    interactivity: {
+      detect_on: "canvas",
+      events: {
+        onhover: { enable: true, mode: "repulse" },
+        onclick: { enable: true, mode: "push" }
+      }
+    }
   });
 
-  document.getElementById("ym").innerHTML = [
-    timeComponents[0], // years
-    timeComponents[1]  // months
-  ].map(createTimeBox).join('');
+  function updateTime() {
+    const targetDate = new Date('July 24, 2025 00:00:00').getTime();
+    const now = new Date().getTime();
+    const distance = now - targetDate;
 
-  document.getElementById("dhms").innerHTML = [
-    timeComponents[2], // days
-    timeComponents[3], // hours
-    timeComponents[4], // minutes
-    timeComponents[5]  // seconds
-  ].map(createTimeBox).join('');
-}
+    const years = Math.floor(distance / (1000 * 60 * 60 * 24 * 365));
+    const months = Math.floor((distance % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30.44));
+    const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-function createTimeBox({ amount, name }) {
-  return `
-    <div class="time-box">
-      <div class="time-value">${amount}</div>
-      <div class="time-label">${name}${amount !== 1 ? 's' : ''}</div>
-    </div>
-  `;
-}
+    document.getElementById('ym').innerHTML = `
+      <div class="time-box">
+        <div class="time-value">${years}</div>
+        <div class="time-label">Years</div>
+      </div>
+      <div class="time-box">
+        <div class="time-value">${Math.floor(months)}</div>
+        <div class="time-label">Months</div>
+      </div>
+    `;
 
-setInterval(updateTime, 1000);
-updateTime();
+    document.getElementById('dhms').innerHTML = `
+      <div class="time-box">
+        <div class="time-value">${days}</div>
+        <div class="time-label">Days</div>
+      </div>
+      <div class="time-box">
+        <div class="time-value">${hours}</div>
+        <div class="time-label">Hours</div>
+      </div>
+      <div class="time-box">
+        <div class="time-value">${minutes}</div>
+        <div class="time-label">Minutes</div>
+      </div>
+      <div class="time-box">
+        <div class="time-value">${seconds}</div>
+        <div class="time-label">Seconds</div>
+      </div>
+    `;
+  }
+
+  updateTime();
+  setInterval(updateTime, 1000);
+});
